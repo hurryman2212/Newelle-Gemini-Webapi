@@ -70,7 +70,10 @@ class GeminiWebapiHandler(GeminiHandler):
             uuid_to_update = None
             if len(history):
                 if len(history) == 2:
+                    # Create a valid chat session that can be hashed
                     uuid_to_update = history[1]["UUID"]
+                if len(history) <= 2:
+                    # if len(history) is 1, it must be title generation case
                     history.append({"User": history[0]["User"], "Message": prompt})
                     prompt = history
                 else:
