@@ -142,7 +142,6 @@ class GeminiWebapiHandler(GeminiHandler):
             resp = await chat.send_message(str(prompt), files=file_paths)
 
             self.logger.info("Response received: " + str(resp))
-            print(resp.text)
 
             # Save the metadata binary to cache JSON file with `uuid_to_update` as key
             # (if cache file does not exist, create an empty one)
