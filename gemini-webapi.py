@@ -1,6 +1,7 @@
 from .extensions import NewelleExtension
 from .handlers import HandlerDescription
 from .handlers.llm import GeminiHandler
+from .utility.pip import find_module, install_module
 
 import asyncio, json, os, re, sys
 
@@ -34,7 +35,17 @@ class GeminiWebapiHandler(GeminiHandler):
 
     def __init__(self, settings, path):
         super().__init__(settings, path)
+
         self.logger = logger.bind(class_name="GeminiWebapiHandler")
+
+    def is_installed(self) -> bool:
+        return bool(find_module("gemini_webapi")) and bool(
+            find_module("browser-cookie3")
+        )
+
+    def install(self):
+        install_module("gemini_webapi", self.pip_path)
+        install_module("browser-cookie3", self.pip_path)
 
     def generate_text_stream(
         self,

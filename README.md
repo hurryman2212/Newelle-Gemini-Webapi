@@ -13,7 +13,6 @@
 ## Installation
 1. Download [gemini-webapi.py](https://raw.githubusercontent.com/hurryman2212/Newelle-Gemini-Webapi/refs/heads/main/gemini-webapi.py) file.
 2. [Install the extension](https://newelle.qsk.me/docs/User-guide-to-Extensions).
-3. In Newelle's Preferences window, select General, scroll down and install `gemini_webapi` and `browser-cookie3`.
 
 ## Bug
 Currently, both `create_gem` and `update_gem` method from the `gemini_webapi` package does not work in this Newelle's extension.
