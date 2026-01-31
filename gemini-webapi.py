@@ -35,6 +35,10 @@ class GeminiWebapiHandler(GeminiHandler):
 
     def __init__(self, settings, path):
         super().__init__(settings, path)
+        self.models = [
+            ("Gemini 2.5 Flash", "gemini-2.5-flash"),
+            ("Gemini 3.0 Pro", "gemini-3.0-pro"),
+        ]
 
         self.logger = logger.bind(class_name="GeminiWebapiHandler")
 
@@ -133,8 +137,10 @@ class GeminiWebapiHandler(GeminiHandler):
                 previous_session = cache_data[uuid_to_search]
             self.logger.debug(f"previous_session: {str(previous_session)}")
 
+            model_to_use = self.get_setting("model")
+            self.logger.debug(f"model_to_use: {model_to_use}")
             chat = client.start_chat(
-                model="gemini-3.0-pro",
+                model=model_to_use,
                 gem=updated_gem,
                 metadata=previous_session,
             )
