@@ -1,6 +1,6 @@
 # Newelle Gemini Web API Extension
 <p>
-  <img align="left" width="300" src="https://raw.githubusercontent.com/HanaokaYuzu/Gemini-API/master/assets/banner.png"/>
+  <img align="left" width="200" src="https://raw.githubusercontent.com/HanaokaYuzu/Gemini-API/master/assets/banner.png"/>
   <a href="https://github.com/topics/newelle-extension">
     <img width="100" alt="Download on Flathub" src="https://raw.githubusercontent.com/qwersyk/Assets/main/newelle-extension.svg"/>
   </a>
