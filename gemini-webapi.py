@@ -145,6 +145,9 @@ class GeminiWebapiHandler(GeminiHandler):
                 metadata=previous_session,
             )
             self.logger.info(f"Sending request with {GEM_NAME} gem...")
+            if not prompt:
+                self.logger.warning("Prompt is empty.")
+                prompt = "(no prompt was provided)"  # ?
             resp = await chat.send_message(str(prompt), files=file_paths)
 
             self.logger.info("Response received: " + str(resp))
