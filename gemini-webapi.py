@@ -99,24 +99,6 @@ class GeminiWebapiHandler(GeminiHandler):
                 file_paths += [path.strip() for path in extracted_paths]
             self.logger.debug(f"file_paths: {file_paths}")
 
-            GEM_NAME = "gemini-webapi"
-            self.logger.info(f"Fetching old {GEM_NAME} gem...")
-            await client.fetch_gems()
-            old_gem = client.gems.get(name=GEM_NAME)
-            if old_gem is None:
-                self.logger.info(f"No existing gem found: Creating {GEM_NAME} gem...")
-                updated_gem = await client.create_gem(
-                    name=GEM_NAME,
-                    prompt=system_prompt,
-                )
-            else:
-                self.logger.warning(f"Updating old {GEM_NAME} gem...")
-                updated_gem = await client.update_gem(
-                    gem=old_gem,
-                    name=GEM_NAME,
-                    prompt=system_prompt,
-                )
-
             CACHE_FILEPATH = os.path.join(
                 os.path.dirname(os.path.abspath(__file__)), "cache.json"
             )
@@ -136,14 +118,41 @@ class GeminiWebapiHandler(GeminiHandler):
                 previous_session = cache_data[uuid_to_search]
             self.logger.debug(f"previous_session: {str(previous_session)}")
 
+            if not previous_session:
+                GEM_NAME = "gemini-webapi"
+                self.logger.info(
+                    f"Creating new chat session -> Fetching old {GEM_NAME} gem..."
+                )
+                await client.fetch_gems()
+                old_gem = client.gems.get(name=GEM_NAME)
+                if old_gem is None:
+                    self.logger.info(
+                        f"No existing gem found: Creating {GEM_NAME} gem..."
+                    )
+                    updated_gem = await client.create_gem(
+                        name=GEM_NAME,
+                        prompt=system_prompt,
+                    )
+                else:
+                    self.logger.warning(f"Updating old {GEM_NAME} gem...")
+                    updated_gem = await client.update_gem(
+                        gem=old_gem,
+                        name=GEM_NAME,
+                        prompt=system_prompt,
+                    )
+            else:
+                self.logger.info(
+                    f"Using previous chat session (no need to fetch the gem)..."
+                )
+
             model_to_use = self.get_setting("model")
             self.logger.debug(f"model_to_use: {model_to_use}")
             chat = client.start_chat(
                 model=model_to_use,
-                gem=updated_gem,
+                gem=updated_gem if not previous_session else None,
                 metadata=previous_session,
             )
-            self.logger.info(f"Sending request with {GEM_NAME} gem...")
+            self.logger.info(f"start_chat: Sending request...")
             if not prompt:
                 self.logger.warning("Prompt is empty.")
                 prompt = "(no prompt was provided)"  # ?
