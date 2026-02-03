@@ -6,6 +6,7 @@ from .utility.pip import find_module, install_module
 import asyncio, json, os, re, sys
 
 from gemini_webapi import GeminiClient, set_log_level
+from gemini_webapi.constants import Model
 from loguru import logger
 from typing import Callable, Any
 
@@ -35,12 +36,12 @@ class GeminiWebapiHandler(GeminiHandler):
 
     def __init__(self, settings, path):
         super().__init__(settings, path)
-        self.models = [
-            ("Gemini 2.5 Flash", "gemini-2.5-flash"),
-            ("Gemini 3.0 Pro", "gemini-3.0-pro"),
-        ]
 
         self.logger = logger.bind(class_name="GeminiWebapiHandler")
+
+        # `Model` is enum; Extrace all ( each_constant.name, each constant.model_name ) as a tuple to a list
+        self.models = [(model.name, model.model_name) for model in Model]
+        self.logger.debug(f"Available models: {self.models}")
 
     def is_installed(self) -> bool:
         return bool(find_module("gemini_webapi")) and bool(
@@ -109,14 +110,12 @@ class GeminiWebapiHandler(GeminiHandler):
                     prompt=system_prompt,
                 )
             else:
-                # self.logger.warning(f"Updating old {GEM_NAME} gem...")
-                # updated_gem = await client.update_gem(
-                #     gem=old_gem,
-                #     name=GEM_NAME,
-                #     prompt=system_prompt,
-                # )
-                self.logger.warning(f"Using existing {GEM_NAME} gem...")
-                updated_gem = old_gem
+                self.logger.warning(f"Updating old {GEM_NAME} gem...")
+                updated_gem = await client.update_gem(
+                    gem=old_gem,
+                    name=GEM_NAME,
+                    prompt=system_prompt,
+                )
 
             CACHE_FILEPATH = os.path.join(
                 os.path.dirname(os.path.abspath(__file__)), "cache.json"
