@@ -18,3 +18,5 @@
 Currently, both `create_gem` and `update_gem` method from the `gemini_webapi` package does not work in this Newelle's extension.
 You need to login to the Gemini Web/App version and create the gem of which name is specifically `gemini-webapi` to supplement the system prompt, initially. 
 The log from `stderr` can be helpful as it dumps the completed system prompt string.
+
+[2026-02-03 KST] Now the `fetch_gems` method is broken in the `gemini_webapi`, so currently there is no way to supplement the system prompt for a new chat session. This should be mitigated in `gemini_webapi` and before that, this extension will not work except for already created chat sessions.
