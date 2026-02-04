@@ -99,6 +99,10 @@ class GeminiWebapiHandler(GeminiHandler):
                 file_paths += [path.strip() for path in extracted_paths]
             self.logger.debug(f"file_paths: {file_paths}")
 
+            # Remove non-existing file path(s) from file_paths
+            file_paths = [path for path in file_paths if os.path.exists(path)]
+            self.logger.debug(f"Existing file_paths: {file_paths}")
+
             CACHE_FILEPATH = os.path.join(
                 os.path.dirname(os.path.abspath(__file__)), "cache.json"
             )
