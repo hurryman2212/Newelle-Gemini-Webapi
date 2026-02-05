@@ -39,7 +39,7 @@ class GeminiWebapiHandler(GeminiHandler):
 
         self.logger = logger.bind(class_name="GeminiWebapiHandler")
 
-        # `Model` is enum; Extrace all ( each_constant.name, each constant.model_name ) as a tuple to a list
+        # `Model` is enum; Extract all ( each_constant.name, each constant.model_name ) as a tuple to a list
         self.models = [(model.name, model.model_name) for model in Model]
         self.logger.debug(f"Available models: {self.models}")
 
