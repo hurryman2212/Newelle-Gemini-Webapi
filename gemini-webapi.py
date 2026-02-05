@@ -152,7 +152,7 @@ class GeminiWebapiHandler(GeminiHandler):
                 gem=updated_gem,
                 metadata=previous_session,
             )
-            self.logger.info(f"start_chat: Sending request...")
+            self.logger.info(f"send_message: Sending request...")
             if not prompt:
                 self.logger.warning("Prompt is empty.")
                 prompt = "(no prompt was provided)"  # ?
