@@ -49,7 +49,7 @@ class GeminiWebapiHandler(GeminiHandler):
         )
 
     def install(self):
-        install_module("gemini_webapi", self.pip_path)
+        install_module("gemini_webapi==1.18.1", self.pip_path)
         install_module("browser-cookie3", self.pip_path)
 
     def generate_text_stream(
