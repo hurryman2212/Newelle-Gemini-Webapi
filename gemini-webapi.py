@@ -69,6 +69,9 @@ class GeminiWebapiHandler(GeminiHandler):
             )
             self.logger.debug(f"prompt: {prompt}")
             self.logger.debug(f"history: {history}")
+            system_prompt = "\n".join(
+                system_prompt
+            )  # Otherwise, GEM-related methods will stuck.
             self.logger.debug(f"system_prompt: {system_prompt}")
 
             uuid_to_search = None
