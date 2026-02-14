@@ -3,20 +3,12 @@ from .handlers import HandlerDescription
 from .handlers.llm import GeminiHandler
 from .utility.pip import find_module, install_module
 
-import asyncio, json, os, re, sys
+import asyncio, json, logging, os, re, sys
 
-from gemini_webapi import GeminiClient, set_log_level
-from gemini_webapi.constants import Model
-from loguru import logger
-from typing import Callable, Any
+from typing import Any, Callable
 
 LOG_LEVEL = "TRACE"
-set_log_level(LOG_LEVEL)
-logger.add(
-    sys.stderr,
-    level=LOG_LEVEL,
-    filter=lambda record: record["extra"].get("class_name") == "GeminiWebapiHandler",
-)
+logger = logging.getLogger("GeminiWebapiHandler")
 
 
 class GeminiWebapiExtension(NewelleExtension):
@@ -36,21 +28,37 @@ class GeminiWebapiHandler(GeminiHandler):
 
     def __init__(self, settings, path):
         super().__init__(settings, path)
+        if self.pip_path and self.pip_path not in sys.path:
+            sys.path.append(self.pip_path)
 
-        self.logger = logger.bind(class_name="GeminiWebapiHandler")
+        self.logger = logger
+        self.models = self.default_models
+        if find_module("gemini_webapi"):
+            try:
+                from gemini_webapi.constants import Model
 
-        # `Model` is enum; Extract all ( each_constant.name, each constant.model_name ) as a tuple to a list
-        self.models = [(model.name, model.model_name) for model in Model]
+                # `Model` is enum; Extract all (name, model_name) as a tuple to a list.
+                self.models = [(model.name, model.model_name) for model in Model]
+            except Exception:
+                self.logger.warning(
+                    "Could not load model enum from gemini_webapi; using default model list."
+                )
         self.logger.debug(f"Available models: {self.models}")
 
+    def _ensure_pip_path(self):
+        if self.pip_path and self.pip_path not in sys.path:
+            sys.path.append(self.pip_path)
+
     def is_installed(self) -> bool:
+        self._ensure_pip_path()
         return bool(find_module("gemini_webapi")) and bool(
-            find_module("browser-cookie3")
+            find_module("browser_cookie3")
         )
 
     def install(self):
         install_module("gemini_webapi==1.18.1", self.pip_path)
         install_module("browser-cookie3", self.pip_path)
+        self._ensure_pip_path()
 
     def generate_text_stream(
         self,
@@ -61,6 +69,10 @@ class GeminiWebapiHandler(GeminiHandler):
         extra_args: list = [],
     ) -> str:
         async def _inner(prompt, history, system_prompt):
+            self._ensure_pip_path()
+            from gemini_webapi import GeminiClient, set_log_level
+
+            set_log_level(LOG_LEVEL)
             self.logger.debug("Starting...")
 
             client = GeminiClient()
